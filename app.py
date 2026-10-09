@@ -1,7 +1,7 @@
 import os
 import fitz  # PyMuPDF
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 
 st.set_page_config(page_title="منصة تدقيق الاختبارات", page_icon="🔬", layout="wide")
 
@@ -16,7 +16,8 @@ if not api_key:
     api_key = st.sidebar.text_input("أدخل مفتاح Gemini API:", type="password")
 
 if api_key:
-    genai.configure(api_key=api_key)
+    # تهيئة العميل بالحزمة الحديثة
+    client = genai.Client(api_key=api_key)
 
     # القائمة الجانبية
     st.sidebar.header("⚙️ اختيار المنهج والصف")
@@ -70,9 +71,11 @@ if api_key:
  5. 💡 **توصيات ومقترحات لتحسين جودة ورقة الاختبار**.
                     """
 
-                    # استدعاء النموذج المستقر
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    response = model.generate_content(prompt)
+                    # طلب توليد النص باستعمال العميل الحديث ونموذج gemini-2.5-flash
+                    response = client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=prompt,
+                    )
 
                     st.success("✅ تم الانتهاء من تدقيق ورقة الاختبار بنجاح!")
                     st.markdown("### 📋 تقرير تدقيق الاختبار:")
